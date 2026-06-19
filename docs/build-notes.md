@@ -59,7 +59,61 @@ Observations, friction points, and workarounds encountered while building a mark
 
 ---
 
-### 5. Template literal escaping in code strings
+### 5. Third-party library integration requires manual timing
+
+**What happened:** Needed syntax highlighting via Prism.js. Solar has no package manager integration or import map support — external libraries must be loaded via `<script>` CDN tags in `index.html`.
+
+**Consequence:** Two timing problems arise:
+1. The CDN `<script>` must load before Solar's module scripts run, so it needs to appear earlier in the HTML.
+2. `Prism.highlightAll()` must be called *after* Solar mounts and the DOM is populated. Since Solar renders synchronously in `mountComponent()`, a second `<script type="module">` placed after the main module works — module scripts execute in document order, so it fires after the first one completes.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual></script>
+<script type="module" src="./main.js"></script>
+<script type="module">
+  if (window.Prism) Prism.highlightAll()
+</script>
+```
+
+**Suggested fix:** Document this CDN + post-mount timing pattern. If Solar ever makes `mountComponent()` async, this pattern breaks and would need a callback or promise-based hook.
+
+---
+
+### 6. No `<head>` / meta management from components
+
+**What happened:** Page title, `<meta>` description, Open Graph tags, and favicons can only be set statically in `index.html`. There is no equivalent of Next.js's `<Head>` or React Helmet — no way for a component to update the document head.
+
+**Consequence:** For a single-page marketing site this is fine. For a multi-page app or any site that needs dynamic titles or OG tags per route, this is a hard blocker.
+
+**Suggested fix:** A lightweight `setMeta({ title, description })` utility, or document the workaround (direct `document.title` assignment in a component's `onMount`).
+
+---
+
+### 7. No built-in router
+
+**What happened:** Building even a two-page site (home + about) would require either separate HTML files or a hash-based router built from scratch. There is no `<Link>`, no `useRouter`, and no route-based component mounting built into Solar.
+
+**Consequence:** Not a blocker for a single-page site, but means Solar doesn't scale to multi-page apps without significant additional work.
+
+**Suggested fix:** Even a minimal hash router (`#/about` → mount `AboutPage`) would make Solar viable for small multi-page sites without needing a full framework on top.
+
+---
+
+### 8. Scaffold creates a subdirectory, not the project root
+
+**What happened:** Running `npm create solarbuild@latest my-site` creates files inside `my-site/`, not at the repo root. When deploying to GitHub Pages (which can only serve from `/` or `/docs`), all files had to be manually moved up to the repo root.
+
+```bash
+git mv my-site/index.html index.html
+git mv my-site/components components
+# etc.
+```
+
+**Suggested fix:** Either document this deployment gotcha explicitly, or offer a `--root` flag that scaffolds into the current directory. Most static hosts (GitHub Pages, Netlify, Cloudflare Pages) expect the site at the repo root or a single configurable folder.
+
+---
+
+### 9. Template literal escaping in code strings
 
 **Minor DX issue.** When a component needs to display source code that itself contains template literals (e.g. a code example component), escaping is required when using a template literal to define the string:
 
@@ -77,9 +131,12 @@ This is a JavaScript language limitation, not a Solar bug. However, it came up w
 - **No mention of the hooks-in-child-components limitation.** This is the most consequential constraint for anyone building a non-trivial app and should be called out explicitly in the component model docs.
 - **No canonical pattern for passing children / slots.** React has `children`, Vue has `<slot>` — Solar has no documented equivalent. The `h()` implementation passes children as a prop but it's not surfaced anywhere in the guide.
 - **`h()` vs `createElement()` trade-offs aren't described.** The guide introduces both but doesn't say when to prefer one over the other.
+- **No third-party library integration guide.** The CDN loading + post-mount timing pattern is non-obvious and should be documented with an example.
+- **No deployment guide.** GitHub Pages, Netlify, Cloudflare Pages all have different folder expectations. The scaffold subdirectory issue should be called out.
+- **No meta/head management documented.** Even a note that `document.title` must be set manually in `onMount` would help.
 
 ---
 
 ## Summary
 
-Solar's foundation is genuinely interesting — the registry, structured errors, and no-build philosophy are well-suited for AI-generated code. The main gap for building real pages is that stateful composition (hooks in child components) doesn't work in the current architecture. For purely presentational UIs it holds up well.
+Solar's foundation is genuinely interesting — the registry, structured errors, and no-build philosophy are well-suited for AI-generated code. For purely presentational, single-page UIs it holds up well. The main gaps for real-world use are: stateful composition (hooks in child components don't work), no router, no head management, and some friction around third-party library integration and deployment setup. None of these are architectural blockers — they're missing primitives that are straightforward to add.

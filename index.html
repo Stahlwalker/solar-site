@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solar — Runtime UI for AI-generated code</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Solar — Runtime UI for AI-generated code">
+  <meta property="og:description" content="Solar runs directly in the browser. No compiler, no build step. Explicit props, a component registry, and structured errors give agents a predictable contract to work with.">
+  <meta property="og:image" content="https://solarbuild.dev/og.png">
+  <meta property="og:url" content="https://solarbuild.dev/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Solar — Runtime UI for AI-generated code">
+  <meta name="twitter:description" content="Solar runs directly in the browser. No compiler, no build step.">
+  <meta name="twitter:image" content="https://solarbuild.dev/og.png">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -390,6 +400,47 @@
       flex-shrink: 0;
     }
 
+    /* ── Dot grid ── */
+    .dot-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80vh;
+      background-image: radial-gradient(circle, rgba(245,158,11,0.14) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Floating chips ── */
+    .float-chip {
+      position: fixed;
+      font-family: ui-monospace, 'Cascadia Code', monospace;
+      font-size: 0.72rem;
+      color: rgba(240,237,232,0.35);
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      pointer-events: none;
+      z-index: 0;
+      white-space: nowrap;
+      animation: chip-float var(--chip-dur, 7s) ease-in-out var(--chip-delay, 0s) infinite;
+      backdrop-filter: blur(4px);
+    }
+    .float-chip--amber {
+      color: rgba(245,158,11,0.5);
+      border-color: rgba(245,158,11,0.12);
+      background: rgba(245,158,11,0.03);
+    }
+    @keyframes chip-float {
+      0%, 100% { transform: translateY(0) rotate(var(--chip-rotate, 0deg)); opacity: var(--chip-opacity, 0.85); }
+      50%       { transform: translateY(-16px) rotate(var(--chip-rotate, 0deg)); opacity: 1; }
+    }
+
     /* ── Prism overrides (scoped to code block) ── */
     .code-block pre[class*="language-"] {
       background: transparent;
@@ -420,6 +471,10 @@
       .section__header { margin-bottom: 2rem; }
     }
 
+    @media (max-width: 1100px) {
+      .float-chip { display: none; }
+    }
+
     @media (max-width: 480px) {
       .page { padding: 1.5rem 1.25rem 4rem; }
       .site-nav { margin-bottom: 3rem; }
@@ -440,12 +495,23 @@
       .code-block__filename { display: none; }
 
       .built-badge { bottom: 1rem; right: 1rem; }
+      .float-chip { display: none; }
     }
   </style>
 </head>
 <body>
   <canvas class="stars" id="stars"></canvas>
   <div class="orb"></div>
+  <div class="dot-grid"></div>
+
+  <!-- Floating component chips — decorative, hidden below 1100px -->
+  <span class="float-chip" style="top:290px;left:5%;--chip-dur:7s;--chip-delay:0s;--chip-rotate:-2deg;">&lt;Nav /&gt;</span>
+  <span class="float-chip float-chip--amber" style="top:410px;left:3%;--chip-dur:9s;--chip-delay:1.5s;--chip-rotate:1.5deg;">{ type: 'string' }</span>
+  <span class="float-chip" style="top:350px;left:10%;--chip-dur:8s;--chip-delay:3.2s;--chip-rotate:-1deg;">h()</span>
+  <span class="float-chip float-chip--amber" style="top:270px;right:4%;--chip-dur:8.5s;--chip-delay:0.6s;--chip-rotate:2deg;">registry.register()</span>
+  <span class="float-chip" style="top:420px;right:5%;--chip-dur:7.5s;--chip-delay:2s;--chip-rotate:-1.5deg;">defineComponent()</span>
+  <span class="float-chip float-chip--amber" style="top:335px;right:10%;--chip-dur:9.5s;--chip-delay:1s;--chip-rotate:1deg;">&lt;Button /&gt;</span>
+
   <div id="app"></div>
   <a class="built-badge" href="https://docs.solarbuild.dev/">
     <span class="built-badge__dot"></span>
@@ -455,19 +521,73 @@
   <script>
     const canvas = document.getElementById('stars')
     const ctx = canvas.getContext('2d')
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
+    let W, H
+    const stars = []
+
+    function resize() {
+      const prevW = W || 0, prevH = H || 0
+      W = canvas.width = window.innerWidth
+      H = canvas.height = window.innerHeight
+      // Rescale star positions proportionally so none fall outside the viewport
+      if (prevW > 0 && stars.length) {
+        const sx = W / prevW, sy = H / prevH
+        for (const s of stars) { s.x *= sx; s.y *= sy }
+      }
+    }
     resize()
     window.addEventListener('resize', resize)
+
     for (let i = 0; i < 160; i++) {
-      const x = Math.random() * canvas.width
-      const y = Math.random() * canvas.height
-      const r = Math.random() * 1.2 + 0.2
-      const a = Math.random() * 0.7 + 0.1
-      ctx.beginPath()
-      ctx.arc(x, y, r, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(255,255,255,${a})`
-      ctx.fill()
+      stars.push({
+        x:   Math.random() * W,
+        y:   Math.random() * H,
+        r:   Math.random() * 1.2 + 0.2,
+        a:   Math.random() * 0.55 + 0.15,
+        vx:  (Math.random() - 0.5) * 0.06,
+        vy:  (Math.random() - 0.5) * 0.06,
+        ox: 0, oy: 0,
+        ovx: 0, ovy: 0,
+      })
     }
+
+    const mouse = { x: -9999, y: -9999 }
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY })
+    window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999 })
+
+    ;(function animate() {
+      ctx.clearRect(0, 0, W, H)
+      for (const s of stars) {
+        // Slow ambient drift, wrap edges
+        s.x += s.vx; s.y += s.vy
+        if (s.x < -10) s.x = W + 10
+        if (s.x > W + 10) s.x = -10
+        if (s.y < -10) s.y = H + 10
+        if (s.y > H + 10) s.y = -10
+
+        // Spring toward cursor within radius
+        const dx = mouse.x - (s.x + s.ox)
+        const dy = mouse.y - (s.y + s.oy)
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < 200 && dist > 0) {
+          const f = ((200 - dist) / 200) * 0.014
+          s.ovx += dx * f
+          s.ovy += dy * f
+        }
+        // Spring back to base + dampen
+        s.ovx += -s.ox * 0.035
+        s.ovy += -s.oy * 0.035
+        s.ovx *= 0.80
+        s.ovy *= 0.80
+        s.ox += s.ovx
+        s.oy += s.ovy
+
+        ctx.beginPath()
+        ctx.arc(s.x + s.ox, s.y + s.oy, s.r, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(255,255,255,${s.a})`
+        ctx.fill()
+      }
+      requestAnimationFrame(animate)
+    })()
   </script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual></script>
   <script type="module" src="./main.js"></script>
