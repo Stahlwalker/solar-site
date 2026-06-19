@@ -126,6 +126,36 @@ This is a JavaScript language limitation, not a Solar bug. However, it came up w
 
 ---
 
+### 10. No portal / teleport mechanism
+
+**What happened:** Building a rich hero section required several layers that exist outside the component tree: a star-field canvas, an ambient orb glow, a dot-grid overlay, and floating decorative chips. In React or Vue these would typically be rendered via a portal (`ReactDOM.createPortal`, Vue's `<Teleport>`) so a component can place DOM nodes anywhere in the document — a modal root, fixed overlay, `<body>` etc.
+
+**Consequence:** All ambient effects had to be written as raw HTML and `<script>` tags directly in `index.html`, as siblings to `#app`. They can't be encapsulated in Solar components because there's no way for a component to render outside its parent subtree. This breaks the "everything is a component" model for any visually layered UI.
+
+**Workaround used:** Placed `<canvas class="stars">`, `.orb`, `.dot-grid`, and `.float-chip` elements as direct children of `<body>`, above `#app`, with `position: fixed` and `z-index` layering.
+
+**Suggested fix:** A `mountPortal(component, domNode)` utility that mounts a Solar component into an arbitrary DOM target would cover most cases. Even just documenting the raw-HTML-alongside-`#app` pattern would help.
+
+---
+
+### 11. No `onMount` lifecycle for sub-components
+
+**What happened:** The star-field canvas needed to start a `requestAnimationFrame` loop after the DOM was ready. Normally this would go in an `onMount` hook. But as documented in issue #1, hooks don't work in sub-components. Even for the root component, there's no documented `onMount` equivalent — `mountComponent()` is synchronous and returns nothing.
+
+**Consequence:** DOM-dependent initialization (canvas setup, third-party widget attachment, scroll listeners) can't be done from within any component. Everything has to live in a separate `<script>` tag that runs after `mountComponent()`.
+
+**Workaround used:** Placed the canvas animation script in a plain `<script>` block before the module scripts. Since Solar mounts synchronously, the order `<script>` → `<script type="module" src="main.js">` → `<script type="module">Prism.highlightAll()</script>` guarantees correct sequencing.
+
+**Suggested fix:** `mountComponent()` could accept an `{ onMount }` option, or return a handle with a `.onMount(fn)` callback. This would give root components a clean place to run post-render DOM work and remove the need for out-of-band `<script>` tags.
+
+---
+
+### 12. Ambient / visual-layer components aren't feasible
+
+**Practical summary of issues #1, #10, and #11 combined.** When building a marketing page with a star field, animated orb, dot grid, and floating chips, none of these could be Solar components. The combination of no portals, no `onMount`, and no canvas/animation APIs meant the entire visual layer lived outside Solar. For a framework positioned as the UI layer for AI-generated code, this is a meaningful gap — AI agents generating visually rich UIs will hit this wall immediately.
+
+---
+
 ## Missing from the docs
 
 - **No mention of the hooks-in-child-components limitation.** This is the most consequential constraint for anyone building a non-trivial app and should be called out explicitly in the component model docs.
@@ -134,9 +164,11 @@ This is a JavaScript language limitation, not a Solar bug. However, it came up w
 - **No third-party library integration guide.** The CDN loading + post-mount timing pattern is non-obvious and should be documented with an example.
 - **No deployment guide.** GitHub Pages, Netlify, Cloudflare Pages all have different folder expectations. The scaffold subdirectory issue should be called out.
 - **No meta/head management documented.** Even a note that `document.title` must be set manually in `onMount` would help.
+- **No mention of portal or teleport patterns.** Fixed overlays, modals, and ambient background layers all need to live outside `#app`. This should be documented.
+- **No `onMount` / post-render hook documented.** Canvas setup, scroll listeners, third-party widget attachment — all common real-world needs — require a post-mount callback that currently doesn't exist or isn't documented.
 
 ---
 
 ## Summary
 
-Solar's foundation is genuinely interesting — the registry, structured errors, and no-build philosophy are well-suited for AI-generated code. For purely presentational, single-page UIs it holds up well. The main gaps for real-world use are: stateful composition (hooks in child components don't work), no router, no head management, and some friction around third-party library integration and deployment setup. None of these are architectural blockers — they're missing primitives that are straightforward to add.
+Solar's foundation is genuinely interesting — the registry, structured errors, and no-build philosophy are well-suited for AI-generated code. For purely presentational, single-page UIs it holds up well. The main gaps for real-world use are: stateful composition (hooks in child components don't work), no portal mechanism, no `onMount` lifecycle, no router, no head management, and some friction around third-party library integration and deployment setup. The practical consequence is that any visually rich UI — ambient effects, canvas, fixed overlays — ends up living entirely outside Solar's component system. None of these are architectural blockers — they're missing primitives that are straightforward to add.
