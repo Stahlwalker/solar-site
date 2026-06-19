@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solar — Runtime UI for AI-generated code</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -388,6 +389,58 @@
       box-shadow: 0 0 6px var(--solar-glow);
       flex-shrink: 0;
     }
+
+    /* ── Prism overrides (scoped to code block) ── */
+    .code-block pre[class*="language-"] {
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      text-shadow: none;
+    }
+    .code-block code[class*="language-"] { background: transparent; }
+    .code-block .token.keyword      { color: #c084fc; }
+    .code-block .token.string       { color: #86efac; }
+    .code-block .token.function     { color: #60a5fa; }
+    .code-block .token.comment      { color: var(--text-dim); font-style: italic; }
+    .code-block .token.number       { color: #fb923c; }
+    .code-block .token.boolean      { color: #fb923c; }
+    .code-block .token.operator     { color: var(--text-dim); }
+    .code-block .token.punctuation  { color: #6b7280; }
+    .code-block .token.property     { color: #60a5fa; }
+    .code-block .token.parameter    { color: var(--text); }
+    .code-block .token.module       { color: var(--solar); }
+    .code-block .token.imports      { color: var(--solar); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .page { padding: 2rem 1.5rem 5rem; }
+      .site-nav { margin-bottom: 4rem; }
+      .hero { margin-bottom: 4rem; }
+      .section { margin-bottom: 4rem; }
+      .section__header { margin-bottom: 2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .page { padding: 1.5rem 1.25rem 4rem; }
+      .site-nav { margin-bottom: 3rem; }
+      .hero { margin-bottom: 3rem; }
+      .section { margin-bottom: 3rem; }
+
+      .orbit-ring { width: 60px; height: 60px; }
+      .orbit-core { inset: 14px; }
+
+      .hero-sub { font-size: 0.95rem; }
+
+      .features-grid { grid-template-columns: 1fr; }
+
+      .code-block__pre {
+        font-size: 0.75rem;
+        padding: 1.25rem;
+      }
+      .code-block__filename { display: none; }
+
+      .built-badge { bottom: 1rem; right: 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -416,6 +469,11 @@
       ctx.fill()
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual></script>
   <script type="module" src="./main.js"></script>
+  <script type="module">
+    // Solar mounts synchronously, so Prism can highlight immediately after
+    if (window.Prism) Prism.highlightAll()
+  </script>
 </body>
 </html>

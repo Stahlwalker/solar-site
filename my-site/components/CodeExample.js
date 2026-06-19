@@ -21,7 +21,9 @@ const CodeExample = defineComponent({
           ['span', { class: 'code-block__dot', style: 'background:#28c840' }],
           ['span', { class: 'code-block__filename' }, 'components/Button.js'],
         ],
-        ['pre', { class: 'code-block__pre' }, code],
+        ['pre', { class: 'code-block__pre language-javascript' },
+          ['code', { class: 'language-javascript' }, code],
+        ],
       ],
     ])
   },
