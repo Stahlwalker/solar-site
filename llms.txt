@@ -1,0 +1,24 @@
+# Solar
+
+> Solar is a browser-native UI runtime framework built for the age of AI-generated code. It runs directly in the browser with no compiler and no build step, giving AI agents a predictable, structured contract for writing, modifying, and debugging UI components.
+
+## What Solar is
+
+Solar is a lightweight frontend framework that eliminates the toolchain entirely. Components are defined with explicit props, validated at runtime, and registered in a global component registry. When an agent makes a mistake, Solar returns structured JSON errors — not cryptic stack traces — so agents can parse, understand, and fix problems autonomously.
+
+## Core design principles
+
+- **No compiler required** — code runs instantly in the browser; no build step, no bundler, no transpilation
+- **Explicit prop contracts** — every prop is typed and validated at runtime with structured JSON error responses
+- **Component registry** — every component is automatically registered and addressable by name, giving agents a complete map of the application
+- **Declared dependencies** — effects declare their dependencies explicitly so data flow is always readable and safe to modify programmatically
+
+## Who Solar is for
+
+Solar is designed for developers building AI-native applications where code is increasingly written, modified, and debugged by AI agents. It is also well-suited for prototyping, education, and any context where a zero-friction, zero-toolchain UI layer is valuable.
+
+## Links
+
+- Docs: https://docs.solarbuild.dev/
+- GitHub: https://github.com/Stahlwalker/framework-solar
+- Homepage: https://solarbuild.dev/
