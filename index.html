@@ -172,6 +172,7 @@
       height: 80px;
       margin: 0 auto 2rem;
       position: relative;
+      overflow: visible;
     }
     .orbit-ring::before {
       content: '';
@@ -200,10 +201,70 @@
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #fff8e1 0%, var(--solar) 55%, #78350f 100%);
       box-shadow: 0 0 20px var(--solar-glow);
+      animation: sun-breathe 4s ease-in-out infinite;
+      overflow: visible;
+    }
+    /* rotating corona ray ring */
+    .orbit-core::before {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,   rgba(245,158,11,0.55) 14deg,  transparent 28deg,
+        transparent 68deg,  rgba(245,158,11,0.40) 80deg,  transparent 92deg,
+        transparent 130deg, rgba(245,158,11,0.65) 145deg, transparent 160deg,
+        transparent 195deg, rgba(245,158,11,0.35) 208deg, transparent 221deg,
+        transparent 270deg, rgba(245,158,11,0.50) 282deg, transparent 295deg,
+        transparent 340deg, rgba(245,158,11,0.30) 352deg, transparent 360deg
+      );
+      -webkit-mask: radial-gradient(circle at center, transparent 55%, black 62%);
+      mask: radial-gradient(circle at center, transparent 55%, black 62%);
+      animation: corona-spin 14s linear infinite;
+      filter: blur(1.5px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    /* asymmetric flare hot-spots that drift and pulse */
+    .orbit-core::after {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse 35% 55% at 88% 18%, rgba(255,220,80,0.75) 0%, transparent 100%),
+        radial-gradient(ellipse 28% 44% at 12% 82%, rgba(245,158,11,0.55) 0%, transparent 100%),
+        radial-gradient(ellipse 20% 35% at 55% 5%,  rgba(251,191,36,0.50) 0%, transparent 100%);
+      animation: flare-dance 5s ease-in-out infinite;
+      filter: blur(3px);
+      pointer-events: none;
+      z-index: 2;
     }
     @keyframes spin {
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
+    }
+    @keyframes corona-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes sun-breathe {
+      0%, 100% {
+        box-shadow: 0 0 20px var(--solar-glow), 0 0 40px rgba(245,158,11,0.10);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 32px rgba(245,158,11,0.65), 0 0 64px rgba(245,158,11,0.25), 0 0 90px rgba(245,158,11,0.08);
+        transform: scale(1.07);
+      }
+    }
+    @keyframes flare-dance {
+      0%   { opacity: 0.25; transform: scale(1.00) rotate(0deg); }
+      20%  { opacity: 0.80; transform: scale(1.06) rotate(9deg); }
+      45%  { opacity: 0.40; transform: scale(0.97) rotate(-4deg); }
+      70%  { opacity: 0.90; transform: scale(1.10) rotate(14deg); }
+      100% { opacity: 0.25; transform: scale(1.00) rotate(0deg); }
     }
     .hero h1 {
       font-size: clamp(2rem, 5vw, 3.5rem);
