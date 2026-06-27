@@ -6,8 +6,7 @@ const Nav = defineComponent({
   render() {
     return h(['nav', { class: 'site-nav' },
       ['a', { class: 'nav-logo', href: '/' },
-        ['div', { class: 'logo-mark' }],
-        ['span', { class: 'logo-text' }, 'Solar'],
+        ['img', { src: './logo/new-logo/dark.svg', alt: 'Solar', height: '32' }],
       ],
       ['div', { class: 'nav-links' },
         ['a', { class: 'nav-link nav-link--cta', href: 'https://docs.solarbuild.dev/' }, 'Docs →'],
