@@ -1,6 +1,6 @@
 import { defineComponent, registry, h } from '../solar/index.js'
 
-const code = "import { defineComponent, registry, h } from '../solar/index.js'\n\nconst Button = defineComponent({\n  name: 'Button',\n  props: {\n    label:   { type: 'string', required: true  },\n    variant: { type: 'string', required: false },\n  },\n  render({ label, variant = 'primary' }) {\n    return h(['button', { class: `btn btn--${variant}` }, label])\n  },\n})\n\nregistry.register(Button)\nexport default Button"
+const code = "import { defineComponent, registry, h } from 'solarbuild'\n\nconst Button = defineComponent({\n  name: 'Button',\n  props: {\n    label:   { type: 'string', required: true  },\n    variant: { type: 'string', required: false },\n  },\n  render({ label, variant = 'primary' }) {\n    return h(['button', { class: `btn btn--${variant}` }, label])\n  },\n})\n\nregistry.register(Button)\nexport default Button"
 
 const CodeExample = defineComponent({
   name: 'CodeExample',
