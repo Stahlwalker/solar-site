@@ -11,7 +11,7 @@ const Hero = defineComponent({
       ['span', { class: 'label' }, 'Runtime Framework'],
       ['h1', {}, 'UI for the age of AI-generated code'],
       ['p', { class: 'hero-sub' },
-        'Solar runs directly in the browser — no compiler, no build step. Explicit props, a component registry, and structured error responses give agents the predictable contract they need.',
+        'Solar runs directly in the browser. No compiler, no build step. Explicit props, a component registry, and structured error responses give agents the predictable contract they need.',
       ],
       ['div', { class: 'cta-row' },
         ['a', { class: 'btn btn--primary', href: 'https://docs.solarbuild.dev/' }, 'Read the docs →'],
