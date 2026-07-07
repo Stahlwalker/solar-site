@@ -1,7 +1,9 @@
 import { mountComponent } from './solar/index.js'
 import HomePage from './components/HomePage.js'
 
-mountComponent(HomePage, {}, document.getElementById('app'))
+const appEl = document.getElementById('app')
+appEl.innerHTML = ''
+mountComponent(HomePage, {}, appEl)
 
 document.addEventListener('click', (e) => {
   const link = e.target.closest('a[href]')
@@ -10,7 +12,7 @@ document.addEventListener('click', (e) => {
   const href = link.getAttribute('href')
   const cls = link.className || ''
 
-  if (href === 'https://docs.solarbuild.dev/') {
+  if (href === 'https://docs.solarbuild.dev/docs/introduction') {
     const location = cls.includes('nav-link') ? 'nav'
       : cls.includes('built-badge') ? 'badge'
       : 'hero'

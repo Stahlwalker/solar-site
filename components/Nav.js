@@ -9,7 +9,7 @@ const Nav = defineComponent({
         ['img', { src: './logo/new-logo/dark.svg', alt: 'Solar', height: '32' }],
       ],
       ['div', { class: 'nav-links' },
-        ['a', { class: 'nav-link nav-link--cta', href: 'https://docs.solarbuild.dev/' }, 'Docs →'],
+        ['a', { class: 'nav-link nav-link--cta', href: 'https://docs.solarbuild.dev/docs/introduction' }, 'Docs →'],
       ],
     ])
   },

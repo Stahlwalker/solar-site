@@ -31,9 +31,7 @@
       "price": "0",
       "priceCurrency": "USD"
     },
-    "codeRepository": "https://github.com/Stahlwalker/framework-solar",
-    "documentation": "https://docs.solarbuild.dev/",
-    "license": "https://github.com/Stahlwalker/framework-solar/blob/main/LICENSE"
+    "sameAs": "https://github.com/Stahlwalker/framework-solar"
   }
   </script>
   <script>
@@ -88,6 +86,8 @@
   </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
   <style>
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -650,8 +650,40 @@
   <span class="float-chip" style="top:420px;right:5%;--chip-dur:7.5s;--chip-delay:2s;--chip-rotate:-1.5deg;">defineComponent()</span>
   <span class="float-chip float-chip--amber" style="top:335px;right:10%;--chip-dur:9.5s;--chip-delay:1s;--chip-rotate:1deg;">&lt;Button /&gt;</span>
 
-  <div id="app"></div>
-  <a class="built-badge" href="https://docs.solarbuild.dev/">
+  <h1 class="sr-only">UI for the age of AI-generated code</h1>
+  <div id="app">
+    <nav class="site-nav">
+      <a class="nav-logo" href="/"><img src="./logo/new-logo/dark.svg" alt="Solar" height="32"></a>
+      <div class="nav-links">
+        <a class="nav-link nav-link--cta" href="https://docs.solarbuild.dev/docs/introduction">Docs →</a>
+      </div>
+    </nav>
+    <section class="hero">
+      <span class="label">Runtime Framework</span>
+      <p class="hero-sub">Solar runs directly in the browser. No compiler, no build step. Explicit props, a component registry, and structured error responses give agents the predictable contract they need.</p>
+      <div class="cta-row">
+        <a class="btn btn--primary" href="https://docs.solarbuild.dev/docs/introduction">Read the docs →</a>
+        <a class="btn btn--secondary" href="https://github.com/Stahlwalker/framework-solar">View on GitHub</a>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section__header">
+        <span class="label">Core principles</span>
+        <h2 class="section__title">Built for agents. Readable by humans.</h2>
+        <p class="section__sub">Every design decision in Solar optimizes for the new reality: code is increasingly written, modified, and debugged by AI.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card"><p class="feature-card__title">No compiler required</p><p class="feature-card__body">Code runs instantly in the browser. No build step means faster iteration, complete debuggability, and zero toolchain friction.</p></div>
+        <div class="feature-card"><p class="feature-card__title">Explicit contracts</p><p class="feature-card__body">Every prop is typed and validated at runtime. Agents receive structured JSON errors they can parse, understand, and fix autonomously.</p></div>
+        <div class="feature-card"><p class="feature-card__title">Component registry</p><p class="feature-card__body">Every component is automatically registered and addressable by name. Agents always have a complete map of what's in your app.</p></div>
+        <div class="feature-card"><p class="feature-card__title">Declared dependencies</p><p class="feature-card__body">Effects state their dependencies explicitly. Data flow is always readable, predictable, and safe to modify programmatically.</p></div>
+      </div>
+    </section>
+    <footer class="site-footer">
+      <div class="footer-links"><a class="footer-link" href="https://docs.solarbuild.dev/docs/introduction">Documentation</a></div>
+    </footer>
+  </div>
+  <a class="built-badge" href="https://docs.solarbuild.dev/docs/introduction">
     <span class="built-badge__dot"></span>
     Built with Solar
   </a>

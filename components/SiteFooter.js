@@ -6,7 +6,7 @@ const SiteFooter = defineComponent({
   render() {
     return h(['footer', { class: 'site-footer' },
       ['div', { class: 'footer-links' },
-        ['a', { class: 'footer-link', href: 'https://docs.solarbuild.dev/' }, 'Documentation'],
+        ['a', { class: 'footer-link', href: 'https://docs.solarbuild.dev/docs/introduction' }, 'Documentation'],
       ],
       ['p', { class: 'footer-copy' }, '© 2026 Solar. Built by ', ['a', { href: 'https://lukestahl.io/', target: '_blank', rel: 'noopener noreferrer' }, 'Luke Stahl'], '.'],
     ])
