@@ -12,7 +12,7 @@ document.addEventListener('click', (e) => {
   const href = link.getAttribute('href')
   const cls = link.className || ''
 
-  if (href === 'https://docs.solarbuild.dev/docs/introduction') {
+  if (href === 'https://docs.solarbuild.dev/') {
     const location = cls.includes('nav-link') ? 'nav'
       : cls.includes('built-badge') ? 'badge'
       : 'hero'
